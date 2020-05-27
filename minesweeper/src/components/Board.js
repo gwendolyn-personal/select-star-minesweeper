@@ -194,11 +194,20 @@ export default class Board extends React.Component {
   }
 
   revealMineCluesAbove(startingIndex, clueSquares, squareValues) {
+    if (squareValues[startingIndex] != null) {
+      return;
+    }
+
     var indexAbove = startingIndex - this.state.size;
     var indexLeft = startingIndex - 1;
     var indexRight = startingIndex + 1;
 
     squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
+
+    // Base Case: first selection is a clue
+    if (clueSquares[startingIndex] > 0) {
+      return
+    }
 
     // If spaces exist to the left, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
     if (indexLeft % this.state.size != 0) {
@@ -219,20 +228,27 @@ export default class Board extends React.Component {
       }
     }
 
-    // Base case: current clue is not 0 mines, there are no more spaces above to check
-    if (clueSquares[startingIndex] > 0 || startingIndex < this.state.size) {
-      return;
-    } else {
+    // There are no more spaces above to check
+    if (startingIndex >= this.state.size) {
       this.revealMineCluesAbove(indexAbove, clueSquares, squareValues);
     }
   }
 
   revealMineCluesBelow(startingIndex, clueSquares, squareValues) {
+    if (squareValues[startingIndex] != null) {
+      return;
+    }
+
     var indexBelow = startingIndex + this.state.size;
     var indexLeft = startingIndex - 1;
     var indexRight = startingIndex + 1;
 
     squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
+
+    // Base Case: first selection is a clue
+    if (clueSquares[startingIndex] > 0) {
+      return
+    }
 
     // If spaces exist to the left, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
     if (indexLeft % this.state.size != 0) {
@@ -254,15 +270,17 @@ export default class Board extends React.Component {
 
     }
 
-    // Base case: current clue is not 0 mines, there are no more spaces below to check
-    if (clueSquares[startingIndex] > 0 || startingIndex >= (squareValues.length - this.state.size)) {
-      return;
-    } else {
+    // There are no more spaces below to check
+    if (startingIndex < (squareValues.length - this.state.size)) {
       this.revealMineCluesBelow(indexBelow, clueSquares, squareValues);
     }
   }
 
   revealMineCluesLeft(startingIndex, clueSquares, squareValues) {
+    if (squareValues[startingIndex] != null) {
+      return;
+    }
+
     squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
 
     // Base case for moving left: current clue is not 0 mines, there are no more spaces to the left to check
@@ -284,6 +302,10 @@ export default class Board extends React.Component {
   }
 
   revealMineCluesRight(startingIndex, clueSquares, squareValues) {
+    if (squareValues[startingIndex] != null) {
+      return;
+    }
+
     squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
 
     // Base case for moving left: current clue is not 0 mines, there are no more spaces to the left to check
