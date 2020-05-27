@@ -307,13 +307,20 @@ export default class Board extends React.Component {
     var minesFound = this.state.minesFound;
 
     // event.preventDefault();
-    if(squareValues[squareIndex] == null && minesRemaining > 0)
+    if (squareValues[squareIndex] == null && minesRemaining > 0)
     {
       squareValues[squareIndex] = 'F';
       minesRemaining--;
 
-      if(mineSquares[squareIndex] === 1) {
+      if(mineSquares[squareIndex] == 1) {
         minesFound++;
+      }
+    } else if (squareValues[squareIndex] == 'F') {
+      squareValues[squareIndex] = null;
+      minesRemaining++;
+
+      if(mineSquares[squareIndex] == 1) {
+        minesFound--;
       }
     }
 
