@@ -150,7 +150,7 @@ export default class Board extends React.Component {
     }
 
     if (minesRemaining == -1) {
-      this.revealMines();
+      this.revealMines(minesRemaining, this.state.minesFound);
     } else {
       this.setState(
         {
@@ -351,7 +351,7 @@ export default class Board extends React.Component {
     }
 
     if(minesFound == this.state.mines) {
-      this.revealMines();
+      this.revealMines(minesRemaining, minesFound);
     } else {
       this.setState(
         {
@@ -363,7 +363,7 @@ export default class Board extends React.Component {
     }
   }
 
-  revealMines() {
+  revealMines(minesRemaining, minesFound) {
     const mineSquares = this.state.mineSquares.slice();
     const clueSquares = this.state.clueSquares.slice();
     var squareValues = this.state.squareValues.slice();
@@ -376,7 +376,9 @@ export default class Board extends React.Component {
 
     this.setState(
       {
-        squareValues: squareValues
+        squareValues: squareValues,
+        minesRemaining: minesRemaining,
+        minesFound: minesFound
       }
     );
   }
@@ -417,7 +419,7 @@ export default class Board extends React.Component {
   currentGameStatus() {
     var gameStatus = '';
 
-    if (this.state.mines == -1) {
+    if (this.state.minesRemaining == -1) {
       gameStatus = 'You Lose!';
     } else if (this.state.minesFound == this.state.totalMines) {
       gameStatus = 'You Win!';
