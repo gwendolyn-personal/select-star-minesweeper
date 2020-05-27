@@ -18,7 +18,6 @@ ol, ul {
 }
 
 .square {
-  background: #fff;
   border: 1px solid #999;
   float: left;
   font-size: 24px;
@@ -30,6 +29,18 @@ ol, ul {
   padding: 0;
   text-align: center;
   width: 34px;
+
+  &.unselected {
+    background: #fff;
+  }
+
+  &.selected-safe {
+    background: #d5e8c5;
+  }
+
+  &.selected-mine {
+    background: #d1880a;
+  }
 }
 
 .square:focus {
