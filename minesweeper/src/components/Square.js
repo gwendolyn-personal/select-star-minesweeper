@@ -13,10 +13,12 @@ export default class Square extends React.Component {
 
     if (value == '*') {
       className += ' selected-mine';
+    } else if (value == null) {
+      className += ' unselected';
     } else if (value == '-') {
       className += ' selected-safe';
     } else {
-      className += ' unselected';
+      className += ' selected-clue';
     }
 
     return (className);
@@ -28,7 +30,7 @@ export default class Square extends React.Component {
         className = { this.getSquareClass(this.props.value) }
         onClick={() => this.props.onClick()}
       >
-        {this.props.value}
+        {this.props.value === '-' ? '' : this.props.value}
       </button>
     );
   }

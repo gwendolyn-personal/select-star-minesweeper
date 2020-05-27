@@ -35,6 +35,10 @@ ol, ul {
   }
 
   &.selected-safe {
+    background-color: #c5c7c9;
+  }
+
+  &.selected-clue {
     background: #d5e8c5;
   }
 

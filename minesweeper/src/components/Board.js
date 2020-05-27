@@ -135,6 +135,7 @@ export default class Board extends React.Component {
   guessMineSpace(squareIndex) {
     const squareValues = this.state.squareValues.slice();
     const mineSquares = this.state.mineSquares.slice();
+    const clueSquares = this.state.clueSquares.slice();
     var value = '-';
     var minesRemaining = this.state.mines;
 
@@ -142,6 +143,11 @@ export default class Board extends React.Component {
     if (mineSquares[squareIndex] === 1) {
       value = '*';
       minesRemaining--;
+    }
+
+    // Check for mine clues
+    else if (clueSquares[squareIndex] > 0) {
+      value = clueSquares[squareIndex];
     }
 
     squareValues[squareIndex] = value;
