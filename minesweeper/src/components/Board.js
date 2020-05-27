@@ -40,12 +40,23 @@ export default class Board extends React.Component {
   guessMineSpace(squareIndex) {
     const squareValues = this.state.squareValues.slice();
     const mineSquares = this.state.mineSquares.slice();
+    var value = '-';
+    var minesRemaining = this.state.mines;
 
     // Check for mine on requested space and set value response
-    var value = (mineSquares[squareIndex] === 1 ? '*' : '-' )
+    if (mineSquares[squareIndex] === 1) {
+      value = '*';
+      minesRemaining--;
+    }
+
     squareValues[squareIndex] = value;
 
-    this.setState({squareValues: squareValues});
+    this.setState(
+      {
+        squareValues: squareValues,
+        mines: minesRemaining
+      }
+    );
   }
 
   // ------- Rendering -------
@@ -83,6 +94,7 @@ export default class Board extends React.Component {
   render() {
     return (
       <div>
+        <div class="mines-remaining">{ this.state.mines }</div>
         { this.renderRows() }
       </div>
     );
