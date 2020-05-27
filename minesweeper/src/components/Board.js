@@ -180,6 +180,11 @@ export default class Board extends React.Component {
     if (startingIndex % this.state.size != 0) {
       this.revealMineCluesLeft(indexLeft, clueSquares, squareValues);
     }
+
+    // Recursively reveal all non-mine fields to the right of the the selected field
+    if ((startingIndex + 1) % this.state.size != 0) {
+      this.revealMineCluesRight(indexRight, clueSquares, squareValues);
+    }
   }
 
   revealMineCluesAbove(startingIndex, clueSquares, squareValues) {
@@ -192,6 +197,11 @@ export default class Board extends React.Component {
     // If spaces exist to the left, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
     if (indexLeft % this.state.size != 0 && clueSquares[indexLeft] > 0) {
       squareValues[indexLeft] = clueSquares[indexLeft];
+    }
+
+    // If spaces exist to the right, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
+    if ((startingIndex + 1) % this.state.size != 0 && clueSquares[indexRight] > 0) {
+      squareValues[indexRight] = clueSquares[indexRight];
     }
 
     // Base case: current clue is not 0 mines, there are no more spaces above to check
@@ -214,6 +224,11 @@ export default class Board extends React.Component {
       squareValues[indexLeft] = clueSquares[indexLeft];
     }
 
+    // If spaces exist to the right, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
+    if ((startingIndex + 1) % this.state.size != 0 && clueSquares[indexRight] > 0) {
+      squareValues[indexRight] = clueSquares[indexRight];
+    }
+
     // Base case: current clue is not 0 mines, there are no more spaces below to check
     if (clueSquares[startingIndex] > 0 || startingIndex >= (squareValues.length - this.state.size)) {
       return;
@@ -231,6 +246,27 @@ export default class Board extends React.Component {
     } else {
       if (startingIndex % this.state.size != 0) {
         this.revealMineCluesLeft(startingIndex - 1, clueSquares, squareValues);
+      }
+
+      if (startingIndex >= this.state.size) {
+        this.revealMineCluesAbove(startingIndex, clueSquares, squareValues);
+      }
+
+      if (startingIndex <= (squareValues.length - this.state.size)) {
+        this.revealMineCluesBelow(startingIndex, clueSquares, squareValues);
+      }
+    }
+  }
+
+  revealMineCluesRight(startingIndex, clueSquares, squareValues) {
+    squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
+
+    // Base case for moving left: current clue is not 0 mines, there are no more spaces to the left to check
+    if (clueSquares[startingIndex] > 0) {
+      return;
+    } else {
+      if ((startingIndex + 1) % this.state.size != 0) {
+        this.revealMineCluesRight(startingIndex + 1, clueSquares, squareValues);
       }
 
       if (startingIndex >= this.state.size) {
