@@ -37,7 +37,7 @@ export default class Square extends React.Component {
         onClick={() => this.props.onClick()}
         onContextMenu={() => this.props.onContextMenu()}
       >
-        {this.props.value === '-' ? '' : this.props.value}
+        {this.props.value === '-' || this.props.value == 0 ? '' : this.props.value}
       </button>
     );
   }

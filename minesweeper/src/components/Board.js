@@ -149,12 +149,16 @@ export default class Board extends React.Component {
       this.revealMineFreeField(squareIndex, clueSquares, squareValues)
     }
 
-    this.setState(
-      {
-        squareValues: squareValues,
-        minesRemaining: minesRemaining
-      }
-    );
+    if (minesRemaining == -1) {
+      this.revealMines();
+    } else {
+      this.setState(
+        {
+          squareValues: squareValues,
+          minesRemaining: minesRemaining
+        }
+      );
+    }
   }
 
   revealMineFreeField(startingIndex, clueSquares, squareValues) {
@@ -324,11 +328,33 @@ export default class Board extends React.Component {
       }
     }
 
+    if(minesFound == this.state.mines) {
+      this.revealMines();
+    } else {
+      this.setState(
+        {
+          squareValues: squareValues,
+          minesRemaining: minesRemaining,
+          minesFound: minesFound
+        }
+      );
+    }
+  }
+
+  revealMines() {
+    const mineSquares = this.state.mineSquares.slice();
+    const clueSquares = this.state.clueSquares.slice();
+    var squareValues = this.state.squareValues.slice();
+    var displayValue = '';
+
+    for(var i = 0; i < squareValues.length; i++) {
+      displayValue = (mineSquares[i] == 1 ? '*' : clueSquares[i]);
+      squareValues[i] = displayValue;
+    }
+
     this.setState(
       {
-        squareValues: squareValues,
-        minesRemaining: minesRemaining,
-        minesFound: minesFound
+        squareValues: squareValues
       }
     );
   }
