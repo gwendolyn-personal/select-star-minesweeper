@@ -11,15 +11,20 @@ export default class Square extends React.Component {
   getSquareClass(value) {
     var className = 'square';
 
-    // Refactor to Switch Statement
-    if (value == '*') {
-      className += ' selected-mine';
-    } else if (value == null) {
-      className += ' unselected';
-    } else if (value == '-') {
-      className += ' selected-safe';
-    } else {
-      className += ' selected-clue';
+    switch (value) {
+      case '*':
+        className += ' selected-mine';
+        break;
+      case '-' :
+        className += ' selected-safe';
+        break;
+      case null:
+      case 'F':
+        className += ' unselected';
+        break;
+      default:
+        className += ' selected-clue';
+        break;
     }
 
     return (className);
@@ -30,6 +35,7 @@ export default class Square extends React.Component {
       <button
         className = { this.getSquareClass(this.props.value) }
         onClick={() => this.props.onClick()}
+        onContextMenu={() => this.props.onContextMenu()}
       >
         {this.props.value === '-' ? '' : this.props.value}
       </button>

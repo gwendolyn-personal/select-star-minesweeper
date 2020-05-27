@@ -14,7 +14,9 @@ export default class Board extends React.Component {
       mineSquares: mineSquares,
       clueSquares: clueSquares,
       size: this.props.size,
-      mines: this.props.mines
+      mines: this.props.mines,
+      minesRemaining: this.props.mines,
+      minesFound: 0
     };
   }
 
@@ -136,7 +138,7 @@ export default class Board extends React.Component {
     const mineSquares = this.state.mineSquares.slice();
     const clueSquares = this.state.clueSquares.slice();
     var squareValues = this.state.squareValues.slice();
-    var minesRemaining = this.state.mines;
+    var minesRemaining = this.state.minesRemaining;
 
     // Check for mine on requested space and set value response
     if (mineSquares[squareIndex] === 1) {
@@ -150,7 +152,7 @@ export default class Board extends React.Component {
     this.setState(
       {
         squareValues: squareValues,
-        mines: minesRemaining
+        minesRemaining: minesRemaining
       }
     );
   }
@@ -195,13 +197,22 @@ export default class Board extends React.Component {
     squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
 
     // If spaces exist to the left, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
-    if (indexLeft % this.state.size != 0 && clueSquares[indexLeft] > 0) {
-      squareValues[indexLeft] = clueSquares[indexLeft];
+    if (indexLeft % this.state.size != 0) {
+      if (clueSquares[indexLeft] > 0) {
+        squareValues[indexLeft] = clueSquares[indexLeft];
+      }
+      else if (indexLeft >= this.state.size && squareValues[indexLeft] == null) {
+        this.revealMineCluesAbove(indexLeft, clueSquares, squareValues);
+      }
     }
 
     // If spaces exist to the right, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
-    if ((startingIndex + 1) % this.state.size != 0 && clueSquares[indexRight] > 0) {
-      squareValues[indexRight] = clueSquares[indexRight];
+    if ((indexRight + 1) % this.state.size != 0) {
+      if (clueSquares[indexRight] > 0) {
+        squareValues[indexRight] = clueSquares[indexRight];
+      } else if (indexRight >= this.state.size && squareValues[indexRight] == null) {
+        this.revealMineCluesAbove(indexRight, clueSquares, squareValues);
+      }
     }
 
     // Base case: current clue is not 0 mines, there are no more spaces above to check
@@ -220,13 +231,23 @@ export default class Board extends React.Component {
     squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
 
     // If spaces exist to the left, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
-    if (indexLeft % this.state.size != 0 && clueSquares[indexLeft] > 0) {
-      squareValues[indexLeft] = clueSquares[indexLeft];
+    if (indexLeft % this.state.size != 0) {
+      if (clueSquares[indexLeft] > 0) {
+        squareValues[indexLeft] = clueSquares[indexLeft];
+      }
+      else if ((indexLeft < (squareValues.length - this.state.size) && squareValues[indexLeft] == null)) {
+        this.revealMineCluesBelow(indexLeft, clueSquares, squareValues);
+      }
     }
 
     // If spaces exist to the right, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
-    if ((startingIndex + 1) % this.state.size != 0 && clueSquares[indexRight] > 0) {
-      squareValues[indexRight] = clueSquares[indexRight];
+    if ((indexRight + 1) % this.state.size != 0) {
+      if (clueSquares[indexRight] > 0) {
+        squareValues[indexRight] = clueSquares[indexRight];
+      } else if((indexRight < (squareValues.length - this.state.size) && squareValues[indexLeft] == null)) {
+        this.revealMineCluesBelow(indexRight, clueSquares, squareValues);
+      }
+
     }
 
     // Base case: current clue is not 0 mines, there are no more spaces below to check
@@ -279,6 +300,32 @@ export default class Board extends React.Component {
     }
   }
 
+  layFlag(squareIndex) {
+    const mineSquares = this.state.mineSquares.slice();
+    var squareValues = this.state.squareValues.slice();
+    var minesRemaining = this.state.minesRemaining;
+    var minesFound = this.state.minesFound;
+
+    // event.preventDefault();
+    if(squareValues[squareIndex] == null && minesRemaining > 0)
+    {
+      squareValues[squareIndex] = 'F';
+      minesRemaining--;
+
+      if(mineSquares[squareIndex] === 1) {
+        minesFound++;
+      }
+    }
+
+    this.setState(
+      {
+        squareValues: squareValues,
+        minesRemaining: minesRemaining,
+        minesFound: minesFound
+      }
+    );
+  }
+
   // ------- Rendering -------
   renderSquare(i) {
     return (
@@ -286,6 +333,7 @@ export default class Board extends React.Component {
         id={i}
         value={ this.state.squareValues[i] }
         onClick={ () => this.guessMineSpace(i) }
+        onContextMenu={() => this.layFlag(i)}
       />
     );
   }
@@ -316,8 +364,10 @@ export default class Board extends React.Component {
 
     if (this.state.mines == -1) {
       gameStatus = 'You Lose!';
+    } else if (this.state.minesFound == this.state.totalMines) {
+      gameStatus = 'You Win!';
     } else {
-      gameStatus = 'Mines Remaining: ' + this.state.mines;
+      gameStatus = 'Mines Remaining: ' + this.state.minesRemaining;
     }
 
     return (gameStatus);
