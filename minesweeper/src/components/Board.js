@@ -141,11 +141,11 @@ export default class Board extends React.Component {
     // Check for mine on requested space and set value response
     if (mineSquares[squareIndex] === 1) {
       squareValues[squareIndex] = '*';
-      minesRemaining--;
+      minesRemaining = -1;
+    } else {
+      // Check for mine clues
+      this.revealMineFreeField(squareIndex, clueSquares, squareValues)
     }
-
-    // Check for mine clues
-    this.revealMineFreeField(squareIndex, clueSquares, squareValues)
 
     this.setState(
       {
@@ -311,10 +311,25 @@ export default class Board extends React.Component {
     return rowList;
   }
 
+  currentGameStatus() {
+    var gameStatus = '';
+
+    if (this.state.mines == -1) {
+      gameStatus = 'You Lose!';
+    } else {
+      gameStatus = 'Mines Remaining: ' + this.state.mines;
+    }
+
+    return (gameStatus);
+  }
+
   render() {
     return (
       <div>
-        <div class="mines-remaining">{ this.state.mines }</div>
+        <div class="game-header">
+          <div class="game-title">Minesweeper</div>
+          <div class="game-status">{ this.currentGameStatus() }</div>
+        </div>
         { this.renderRows() }
       </div>
     );
