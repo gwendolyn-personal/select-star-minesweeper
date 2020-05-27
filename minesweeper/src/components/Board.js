@@ -7,10 +7,12 @@ export default class Board extends React.Component {
 
     const totalSquares = this.props.size * this.props.size;
     const mineSquares = this.layMines(this.props.size, this.props.mines);
+    const clueSquares = this.hideClues(mineSquares, this.props.size);
 
     this.state = {
       squareValues: Array(totalSquares).fill(null),
       mineSquares: mineSquares,
+      clueSquares: clueSquares,
       size: this.props.size,
       mines: this.props.mines
     };
@@ -34,6 +36,99 @@ export default class Board extends React.Component {
     }
 
     return (mineSquares);
+  }
+
+  hideClues(mineSquares, size) {
+    var clueSquares = Array(mineSquares.length).fill(0);
+
+    for(var i = 0; i < mineSquares.length; i++) {
+      if (i > size && this.hasMineAbove(i, size, mineSquares) == true) {
+        clueSquares[i]++;
+      }
+
+      if (i < (mineSquares.length - size) && this.hasMineBelow(i, size, mineSquares) == true) {
+        clueSquares[i]++;
+      }
+
+      if ((i + 1) % size != 0) {
+        if (this.hasMineRight(i, mineSquares) === true) {
+          clueSquares[i]++;
+        }
+        if (i > size && this.hasMineRightAbove(i, size, mineSquares) === true) {
+          clueSquares[i]++;
+        }
+        if (i < (mineSquares.length - size) && this.hasMineRightBelow(i, size, mineSquares) === true) {
+          clueSquares[i]++;
+        }
+      }
+
+      if (i % size != 0) {
+        if (this.hasMineLeft(i, mineSquares) === true) {
+          clueSquares[i]++;
+        }
+        if (i > size && this.hasMineLeftAbove(i, size, mineSquares) === true) {
+          clueSquares[i]++;
+        }
+        if (i < (mineSquares.length - size) && this.hasMineLeftBelow(i, size, mineSquares) === true) {
+          clueSquares[i]++;
+        }
+      }
+    }
+
+    return (clueSquares);
+  }
+
+  hasMineAbove(treasure, size, mineSquares) {
+    var hasMine = false;
+    var treasureIndex = treasure - size;
+
+    if (mineSquares[treasureIndex] === 1) {
+      hasMine = true;
+    }
+
+    return (hasMine);
+  }
+
+  hasMine(index, mineSquares) {
+    var hasMine = false;
+
+    if (mineSquares[index] === 1) {
+      hasMine = true;
+    }
+
+    return (hasMine);
+  }
+
+  hasMineBelow(treasure, size, mineSquares) {
+    return (this.hasMine((treasure + size), mineSquares));
+  }
+
+  hasMineAbove(treasure, size, mineSquares) {
+    return (this.hasMine((treasure - size), mineSquares));
+  }
+
+  hasMineRight(treasure, mineSquares) {
+    return (this.hasMine((treasure + 1), mineSquares));
+  }
+
+  hasMineRightAbove(treasure, size, mineSquares) {
+    return (this.hasMine((treasure - size + 1), mineSquares));
+  }
+
+  hasMineRightBelow(treasure, size, mineSquares) {
+    return (this.hasMine((treasure + size + 1), mineSquares));
+  }
+
+  hasMineLeft(treasure, mineSquares) {
+    return (this.hasMine((treasure - 1), mineSquares));
+  }
+
+  hasMineLeftAbove(treasure, size, mineSquares) {
+    return (this.hasMine((treasure - size - 1), mineSquares));
+  }
+
+  hasMineLeftBelow(treasure, size, mineSquares) {
+    return (this.hasMine((treasure + size - 1), mineSquares));
   }
 
   // ------- Event Handling -------
