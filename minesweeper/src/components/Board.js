@@ -172,42 +172,75 @@ export default class Board extends React.Component {
     if (startingIndex >= this.state.size) {
       this.revealMineCluesAbove(indexAbove, clueSquares, squareValues);
     }
+    // Recursively reveal all non-mine fields below the selected field
     if (startingIndex <= (squareValues.length - this.state.size)) {
       this.revealMineCluesBelow(indexBelow, clueSquares, squareValues);
     }
-
-    // checkIndex = startingIndex;
-
-    // // Reveal all non-mine fields to the left of the selected field
-    // while(checkIndex % this.state.size != 0) {
-    //   checkIndex--
-
-    //   squareValues[checkIndex] = clueSquares[checkIndex] == 0 ? '-' : clueSquares[checkIndex];
-
-    //   if(clueSquares[checkIndex] > 0) {
-    //     break;
-    //   }
-    // }
+    // Recursively reveal all non-mine fields to the left of the the selected field
+    if (startingIndex % this.state.size != 0) {
+      this.revealMineCluesLeft(indexLeft, clueSquares, squareValues);
+    }
   }
 
   revealMineCluesAbove(startingIndex, clueSquares, squareValues) {
+    var indexAbove = startingIndex - this.state.size;
+    var indexLeft = startingIndex - 1;
+    var indexRight = startingIndex + 1;
+
     squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
+
+    // If spaces exist to the left, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
+    if (indexLeft % this.state.size != 0 && clueSquares[indexLeft] > 0) {
+      squareValues[indexLeft] = clueSquares[indexLeft];
+    }
 
     // Base case: current clue is not 0 mines, there are no more spaces above to check
     if (clueSquares[startingIndex] > 0 || startingIndex < this.state.size) {
-      return
+      return;
+    } else {
+      this.revealMineCluesAbove(indexAbove, clueSquares, squareValues);
     }
-    this.revealMineCluesAbove(startingIndex - this.state.size, clueSquares, squareValues)
   }
 
   revealMineCluesBelow(startingIndex, clueSquares, squareValues) {
+    var indexBelow = startingIndex + this.state.size;
+    var indexLeft = startingIndex - 1;
+    var indexRight = startingIndex + 1;
+
     squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
 
-    // Base case: current clue is not 0 mines, there are no more spaces below to check
-    if (clueSquares[startingIndex] > 0 || startingIndex > (squareValues.length - this.state.size)) {
-      return
+    // If spaces exist to the left, reveal it if it's a clue (otherwise, it'll be caught with the left/right recursion)
+    if (indexLeft % this.state.size != 0 && clueSquares[indexLeft] > 0) {
+      squareValues[indexLeft] = clueSquares[indexLeft];
     }
-    this.revealMineCluesBelow(startingIndex + this.state.size, clueSquares, squareValues)
+
+    // Base case: current clue is not 0 mines, there are no more spaces below to check
+    if (clueSquares[startingIndex] > 0 || startingIndex >= (squareValues.length - this.state.size)) {
+      return;
+    } else {
+      this.revealMineCluesBelow(indexBelow, clueSquares, squareValues);
+    }
+  }
+
+  revealMineCluesLeft(startingIndex, clueSquares, squareValues) {
+    squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
+
+    // Base case for moving left: current clue is not 0 mines, there are no more spaces to the left to check
+    if (clueSquares[startingIndex] > 0) {
+      return;
+    } else {
+      if (startingIndex % this.state.size != 0) {
+        this.revealMineCluesLeft(startingIndex - 1, clueSquares, squareValues);
+      }
+
+      if (startingIndex >= this.state.size) {
+        this.revealMineCluesAbove(startingIndex, clueSquares, squareValues);
+      }
+
+      if (startingIndex <= (squareValues.length - this.state.size)) {
+        this.revealMineCluesBelow(startingIndex, clueSquares, squareValues);
+      }
+    }
   }
 
   // ------- Rendering -------
