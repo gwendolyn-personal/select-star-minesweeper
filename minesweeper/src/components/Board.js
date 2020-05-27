@@ -16,6 +16,7 @@ export default class Board extends React.Component {
     };
   }
 
+  // ------- Initialization -------
   layMines(size, mines) {
     const totalSquares = size * size;
     var mineSquares = Array(totalSquares).fill(0);
@@ -35,11 +36,25 @@ export default class Board extends React.Component {
     return (mineSquares);
   }
 
+  // ------- Event Handling -------
+  guessMineSpace(squareIndex) {
+    const squareValues = this.state.squareValues.slice();
+    const mineSquares = this.state.mineSquares.slice();
+
+    // Check for mine on requested space and set value response
+    var value = (mineSquares[squareIndex] === 1 ? '*' : '-' )
+    squareValues[squareIndex] = value;
+
+    this.setState({squareValues: squareValues});
+  }
+
+  // ------- Rendering -------
   renderSquare(i) {
     return (
       <Square
         id={i}
         value={ this.state.squareValues[i] }
+        onClick={ () => this.guessMineSpace(i) }
       />
     );
   }
