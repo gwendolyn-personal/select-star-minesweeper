@@ -11,6 +11,7 @@ export default class Square extends React.Component {
   getSquareClass(value) {
     var className = 'square';
 
+    // Refactor to Switch Statement
     if (value == '*') {
       className += ' selected-mine';
     } else if (value == null) {

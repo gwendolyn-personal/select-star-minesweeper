@@ -133,24 +133,19 @@ export default class Board extends React.Component {
 
   // ------- Event Handling -------
   guessMineSpace(squareIndex) {
-    const squareValues = this.state.squareValues.slice();
     const mineSquares = this.state.mineSquares.slice();
     const clueSquares = this.state.clueSquares.slice();
-    var value = '-';
+    var squareValues = this.state.squareValues.slice();
     var minesRemaining = this.state.mines;
 
     // Check for mine on requested space and set value response
     if (mineSquares[squareIndex] === 1) {
-      value = '*';
+      squareValues[squareIndex] = '*';
       minesRemaining--;
     }
 
     // Check for mine clues
-    else if (clueSquares[squareIndex] > 0) {
-      value = clueSquares[squareIndex];
-    }
-
-    squareValues[squareIndex] = value;
+    this.revealMineFreeField(squareIndex, clueSquares, squareValues)
 
     this.setState(
       {
@@ -158,6 +153,61 @@ export default class Board extends React.Component {
         mines: minesRemaining
       }
     );
+  }
+
+  revealMineFreeField(startingIndex, clueSquares, squareValues) {
+    squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
+
+    // Base Case: first selection is a clue
+    if (clueSquares[startingIndex] > 0) {
+      return
+    }
+
+    var indexAbove = startingIndex - this.state.size;
+    var indexBelow = startingIndex + this.state.size;
+    var indexLeft = startingIndex - 1;
+    var indexRight = startingIndex + 1;
+
+    // Recursively reveal all non-mine fields above the selected field
+    if (startingIndex >= this.state.size) {
+      this.revealMineCluesAbove(indexAbove, clueSquares, squareValues);
+    }
+    if (startingIndex <= (squareValues.length - this.state.size)) {
+      this.revealMineCluesBelow(indexBelow, clueSquares, squareValues);
+    }
+
+    // checkIndex = startingIndex;
+
+    // // Reveal all non-mine fields to the left of the selected field
+    // while(checkIndex % this.state.size != 0) {
+    //   checkIndex--
+
+    //   squareValues[checkIndex] = clueSquares[checkIndex] == 0 ? '-' : clueSquares[checkIndex];
+
+    //   if(clueSquares[checkIndex] > 0) {
+    //     break;
+    //   }
+    // }
+  }
+
+  revealMineCluesAbove(startingIndex, clueSquares, squareValues) {
+    squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
+
+    // Base case: current clue is not 0 mines, there are no more spaces above to check
+    if (clueSquares[startingIndex] > 0 || startingIndex < this.state.size) {
+      return
+    }
+    this.revealMineCluesAbove(startingIndex - this.state.size, clueSquares, squareValues)
+  }
+
+  revealMineCluesBelow(startingIndex, clueSquares, squareValues) {
+    squareValues[startingIndex] = clueSquares[startingIndex] == 0 ? '-' : clueSquares[startingIndex];
+
+    // Base case: current clue is not 0 mines, there are no more spaces below to check
+    if (clueSquares[startingIndex] > 0 || startingIndex > (squareValues.length - this.state.size)) {
+      return
+    }
+    this.revealMineCluesBelow(startingIndex + this.state.size, clueSquares, squareValues)
   }
 
   // ------- Rendering -------

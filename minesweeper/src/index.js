@@ -8,7 +8,7 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board size={8} mines={8} />
+          <Board size={8} mines={4} />
         </div>
         <div className="game-info">
         </div>
